@@ -1,6 +1,6 @@
-package com.hoangytm.LoginLogour.Repository;
+package com.hoangytm.LoginLogout.Repository;
 
-import com.hoangytm.LoginLogour.Model.User;
+import com.hoangytm.LoginLogout.Model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

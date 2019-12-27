@@ -1,8 +1,9 @@
-package com.hoangytm.LoginLogour.Service;
+package com.hoangytm.LoginLogout.Service;
 
 
-import com.hoangytm.LoginLogour.Model.User;
-import com.hoangytm.LoginLogour.Repository.UserRepository;
+import com.hoangytm.LoginLogout.Model.User;
+import com.hoangytm.LoginLogout.Repository.UserRepository;
+import com.hoangytm.LoginLogout.Model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

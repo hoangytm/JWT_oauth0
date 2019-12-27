@@ -1,16 +1,18 @@
-package com.hoangytm.LoginLogour.Controller;
+package com.hoangytm.LoginLogout.Controller;
 
 
-import com.hoangytm.LoginLogour.Model.User;
-import com.hoangytm.LoginLogour.Service.UserService;
+import com.hoangytm.LoginLogout.Model.BlackToken;
+import com.hoangytm.LoginLogout.Service.BlackTokenService;
+import com.hoangytm.LoginLogout.Service.UserService;
+import com.hoangytm.LoginLogout.Model.User;
+import com.hoangytm.LoginLogout.Util.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import java.security.Provider;
+import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
+
 
 @RestController
 public class UserController {
@@ -18,15 +20,18 @@ public class UserController {
 
     @Autowired
     UserService userService;
+    @Autowired
+    BlackTokenService blackTokenService;
 
     @GetMapping("/email")
     public String getUser() {
-        return "hello";
+//        Boolean isBlackToken= blackTokenService.checkExistsToken("Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0cnVuZyIsImV4cCI6MTU3ODI3NTc3MX0.ByhxksdFomfJdcx4pUGQZgaWMRIbreqpmYwRpbOo2QE95BH1k4EQCraTJDGA4bXgT28z6-hQZOcevkFR6vLigg");
+       return "hello email";
     }
 
     @GetMapping("/login")
-    public String login(){
-        return "success";
+    public String login() {
+        return "login success";
     }
 
 
@@ -40,17 +45,35 @@ public class UserController {
         } else {
             BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
             user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-             userService.saveUser(user);
-             return "saved success";
+            userService.saveUser(user);
+            return "saved success";
 
         }
     }
 
 
-@GetMapping("/auth")
-public String auth() {
-    return "auth success";
-}
+    @GetMapping("/auth")
+    public String auth() {
+        return "auth success";
+
+    }
+
+//    @GetMapping("/logouts")
+//    public String logOut(){
+//        return
+//                "loglout success";
+//    }
+
+
+    @GetMapping("/logouts")
+    public String logOut(@RequestHeader Map<String, String> headers) {
+        String token = headers.get("authorization").replace(Constants.TOKEN_PREFIX,"");
+        BlackToken blackToken = new BlackToken();
+        blackToken.setBlackToken(token);
+        blackTokenService.save(blackToken);
+        return "success123";
+
+    }
 }
 
 

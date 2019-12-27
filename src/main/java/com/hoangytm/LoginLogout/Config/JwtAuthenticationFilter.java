@@ -1,10 +1,10 @@
-package com.hoangytm.LoginLogour.Config;
+package com.hoangytm.LoginLogout.Config;
 
 import com.auth0.jwt.JWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hoangytm.LoginLogour.Model.LoginViewModel;
-import com.hoangytm.LoginLogour.Model.UserPrincipal;
-import com.hoangytm.LoginLogour.Util.Constants;
+import com.hoangytm.LoginLogout.Model.LoginViewModel;
+import com.hoangytm.LoginLogout.Model.UserPrincipal;
+import com.hoangytm.LoginLogout.Util.Constants;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;

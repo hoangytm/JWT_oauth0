@@ -1,17 +1,23 @@
-package com.hoangytm.LoginLogour.Config;
+package com.hoangytm.LoginLogout.Config;
 
 
 import com.auth0.jwt.JWT;
-import com.auth0.jwt.algorithms.Algorithm;
-import com.hoangytm.LoginLogour.Model.User;
-import com.hoangytm.LoginLogour.Model.UserPrincipal;
-import com.hoangytm.LoginLogour.Repository.UserRepository;
-import com.hoangytm.LoginLogour.Util.Constants;
+
+import com.hoangytm.LoginLogout.Model.User;
+import com.hoangytm.LoginLogout.Model.UserPrincipal;
+import com.hoangytm.LoginLogout.Repository.UserRepository;
+import com.hoangytm.LoginLogout.Service.BlackTokenService;
+import com.hoangytm.LoginLogout.Service.BlackTokenServiceImpl;
+import com.hoangytm.LoginLogout.Util.Constants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.stereotype.Component;
 
 
 import javax.servlet.FilterChain;
@@ -25,16 +31,23 @@ import static com.auth0.jwt.algorithms.Algorithm.HMAC512;
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
     private UserRepository userRepository;
 
+    @Autowired
+    private BlackTokenService blackTokenService;
 
-    public JwtAuthorizationFilter(AuthenticationManager authenticationManager, UserRepository userRepository) {
+
+
+
+    public JwtAuthorizationFilter(AuthenticationManager authenticationManager, UserRepository userRepository, BlackTokenService blackTokenService) {
         super(authenticationManager);
         this.userRepository = userRepository;
+        this.blackTokenService = blackTokenService;
     }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
         // Read the Authorization header, where the JWT token should be
         String header = request.getHeader(Constants.HEADER_STRING);
+
 
         // If header does not contain BEARER or is null delegate to Spring impl and exit
         if (header == null || !header.startsWith(Constants.TOKEN_PREFIX)) {
@@ -50,11 +63,13 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         chain.doFilter(request, response);
     }
 
+
     private Authentication getUsernamePasswordAuthentication(HttpServletRequest request) {
         String token = request.getHeader(Constants.HEADER_STRING)
-                .replace(Constants.TOKEN_PREFIX,"");
-
-        if (token != null) {
+                .replace(Constants.TOKEN_PREFIX,""  );
+//        BlackTokenService blackTokenService = new BlackTokenServiceImpl();
+        Boolean isBlackToken= blackTokenService.checkExistsToken(token);
+        if ((token != null)&& (!isBlackToken)) {
             // parse the token and validate it
             String userName = JWT.require(HMAC512(Constants.SECRET.getBytes()))
                     .build()

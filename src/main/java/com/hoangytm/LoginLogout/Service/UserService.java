@@ -1,6 +1,6 @@
-package com.hoangytm.LoginLogour.Service;
+package com.hoangytm.LoginLogout.Service;
 
-import com.hoangytm.LoginLogour.Model.User;
+import com.hoangytm.LoginLogout.Model.User;
 
 public interface UserService {
     public User findByUsername(String email);

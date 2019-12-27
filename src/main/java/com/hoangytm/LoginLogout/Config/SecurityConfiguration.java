@@ -1,10 +1,16 @@
-package com.hoangytm.LoginLogour.Config;
+package com.hoangytm.LoginLogout.Config;
 
-import com.hoangytm.LoginLogour.Repository.UserRepository;
+import com.hoangytm.LoginLogout.Repository.UserRepository;
+import com.hoangytm.LoginLogout.Service.BlackTokenService;
+import com.hoangytm.LoginLogout.Service.BlackTokenServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
@@ -26,11 +32,23 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private UserRepository userRepository;
     @Autowired
     private DataSource dataSource;
+
+
+    @Autowired
+    private BlackTokenService blackTokenService;
     @Value("${spring.queries.users-query}")
     private String usersQuery;
 
     @Value("${spring.queries.roles-query}")
     private String rolesQuery;
+
+
+    @Bean(name = BeanIds.AUTHENTICATION_MANAGER)
+    @Override
+    public AuthenticationManager authenticationManager() throws Exception {
+        return super.authenticationManager();
+    }
+
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth)
@@ -56,11 +74,12 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .and()
                 // add jwt filters add jwt filters (1. authentication, 2. authorization)
                 .addFilter(new JwtAuthenticationFilter(authenticationManager()))
-                .addFilter(new JwtAuthorizationFilter(authenticationManager(), userRepository))
+                .addFilter(new JwtAuthorizationFilter(authenticationManager(), userRepository, blackTokenService))
                 .authorizeRequests()
                 // configure access rules
                 .antMatchers(HttpMethod.POST, "/login","/registration").permitAll()
-                .antMatchers("/email").hasRole("USER")
+                .antMatchers(HttpMethod.GET, "/logouts").permitAll()
+                .antMatchers("/email").authenticated()
                 .antMatchers("/api/public/management/*").hasRole("MANAGER")
                 .antMatchers("/api/public/admin/*").hasRole("ADMIN")
                 .anyRequest().authenticated();

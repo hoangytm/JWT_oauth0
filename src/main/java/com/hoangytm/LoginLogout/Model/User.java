@@ -1,4 +1,4 @@
-package com.hoangytm.LoginLogour.Model;
+package com.hoangytm.LoginLogout.Model;
 
 
 import javax.persistence.*;
